@@ -231,9 +231,11 @@ export class MainPlotlyComponentComponent implements OnInit {
   selectedDateChange(): void{
     console.log(`Date changed to ${this.selectedDate.toString()}`)
 
+    var tmpgraphdata = [];
     if(this.selectedDate != null){
       this.graphs.forEach(graph => {
-        graph.data.forEach(graphdata => {
+        tmpgraphdata = JSON.parse(JSON.stringify(graph.data));        //Deep copy erstellen, sonst funktioniert das löschen der Einträge in der Foreach nicht.
+        tmpgraphdata.forEach(graphdata => {
           this.getTimeseries(graphdata.station ,graph.field, this.selectedDate.toString())
           graph.data.splice(graph.data.indexOf(graphdata), 1)
         });
