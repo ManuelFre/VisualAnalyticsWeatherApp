@@ -1,0 +1,80 @@
+<h1>Bitte wählen Sie ihre Wunschinformationen:</h1>
+<h2></h2>
+<!--select class="custom-select" multiple >
+    <option value="" disabled>Station(en) wählen:</option>
+    <option *ngFor="let station of stations"      
+    (click)="onSelect(station)">{{station.name}}</option>
+</select>
+  
+<body ng-app="optionApp">
+    <div ng-controller="optionCtrl">
+        <select class="custom-select" multiple="true" ng-model="station.name" ng-change="newSelect()" ng-options="station.name for station in stations"-->
+            <!--option value="" disabled>Station(en) wählen:</option>
+            <option *ngFor="let station of stations" ng-selected="station.name">{{station.name}}</option-->
+        <!--/select>
+    </div>
+</body>
+
+<select class="custom-select" ng-change="newSlct()" multiple="true" >
+    <option value="" disabled>Station(en) wählen:</option>
+    <option *ngFor="let station of stations" ng-change="newSlct()">{{station.name}}</option>
+</select-->
+
+<div class="container">
+    <div class="row">
+      <div class="col-sm">
+        <div class="form-group">
+            <label>Messpunkte:</label>
+            <ng-select 
+                [(ngModel)]="selectedStations"
+                [items]="stations"
+                [closeOnSelect]="false"
+                bindLabel="name"
+                placeholder="Station auswählen"
+                [multiple]="true"           
+                (change)="selectedStationsChange()">
+                <ng-template ng-optgroup-tmp let-item="item" let-item$="item$" let-index="index">
+                    <input id="item-{{index}}" type="checkbox" [ngModel]="item$.selected"/> {{item.name | uppercase}}
+                </ng-template>
+                <ng-template ng-option-tmp let-item="item" let-item$="item$" let-index="index">
+                    <input id="item-{{index}}" type="checkbox" [ngModel]="item$.selected"/> {{item.name}}
+                </ng-template>
+            </ng-select>
+        </div>  
+      </div>
+      <div class="col-sm">
+        <div class="form-group">
+            <label>Messreihen:</label>
+            <ng-select 
+                [(ngModel)]="selectedFields"
+                [items]="fields"
+                [closeOnSelect]="false"
+                bindLabel="name"
+                placeholder="anzuzeigende Messreihen auswählen"
+                [multiple]="true"
+                (change)="selectedFieldsChange()">
+                <ng-template ng-optgroup-tmp let-item="item" let-item$="item$" let-index="index">
+                    <input id="item-{{index}}" type="checkbox" [ngModel]="item$.selected"/> {{item.name | uppercase}}
+                </ng-template>
+                <ng-template ng-option-tmp let-item="item" let-item$="item$" let-index="index">
+                    <input id="item-{{index}}" type="checkbox" [ngModel]="item$.selected"/> {{item.name}}
+                </ng-template>
+            </ng-select>
+        </div>
+      </div>
+      <div class="col-sm">
+        <div class="form-group">
+            <label>Datum:</label>
+            <input type="date" id="day" class="form-control" [(ngModel)]="selectedDate" required (change)="selectedDateChange()">
+        </div>  
+      </div>
+    </div>
+  </div>
+
+<div class="container">
+    <div class="row row-cols-2">
+        <plotly-plot *ngFor="let graph of graphs" [data]="graph.data" [layout]="graph.layout" class="col"></plotly-plot>
+    </div>
+</div>
+
+<!--plotly-plot [data]="graph.data" [layout]="graph.layout"></plotly-plot-->

@@ -1,0 +1,8 @@
+{
+    "/api/*": {
+        "target": "http://www.at-wetter.tk/",
+        "secure": false,
+        "logLevel": "debug",
+        "changeOrigin": true
+    }
+}
