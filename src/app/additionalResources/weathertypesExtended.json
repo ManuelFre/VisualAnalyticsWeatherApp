@@ -1,0 +1,90 @@
+[
+ {
+   "#": 1,
+   "field name": "t",
+   "description": "Temperature",
+   "unit": "°C",
+   "MaxValue": -40,
+   "MinValue": 50
+ },
+ {
+   "#": 2,
+   "field name": "tp",
+   "description": "Dew Point",
+   "unit": "°C",
+   "MaxValue": -40,
+   "MinValue": 50
+ },
+ {
+   "#": 3,
+   "field name": "rf",
+   "description": "Relative Humidity",
+   "unit": "%",
+   "MaxValue": 0,
+   "MinValue": 100
+ },
+ {
+   "#": 4,
+   "field name": "wr",
+   "description": "Wind Direction",
+   "unit": "°",
+   "MaxValue": 0,
+   "MinValue": 360
+ },
+ {
+   "#": 5,
+   "field name": "wg",
+   "description": "Wind Speed",
+   "unit": "km/h",
+   "MaxValue": 0,
+   "MinValue": 200
+ },
+ {
+   "#": 6,
+   "field name": "wsr",
+   "description": "Peek Wind Direction",
+   "unit": "°",
+   "MaxValue": 0,
+   "MinValue": 360
+ },
+ {
+   "#": 7,
+   "field name": "wsg",
+   "description": "Peek Wind Speed",
+   "unit": "km/h",
+   "MaxValue": 0,
+   "MinValue": 200
+ },
+ {
+   "#": 8,
+   "field name": "regen",
+   "description": "Rain amount",
+   "unit": "l/m²",
+   "MaxValue": 0,
+   "MinValue": 200
+ },
+ {
+   "#": 9,
+   "field name": "ldred",
+   "description": "Atmospheric Pressure",
+   "unit": "hPa",
+   "MaxValue": 950,
+   "MinValue": 1050
+ },
+ {
+   "#": 10,
+   "field name": "ldstat",
+   "description": "Atmospheric Pressure (Station Level)",
+   "unit": "hPa",
+   "MaxValue": 600,
+   "MinValue": 1100
+ },
+ {
+   "#": 11,
+   "field name": "sonne",
+   "description": "Sunshine",
+   "unit": "%",
+   "MaxValue": 0,
+   "MinValue": 100
+ }
+]

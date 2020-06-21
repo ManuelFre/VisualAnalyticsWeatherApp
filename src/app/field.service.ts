@@ -3,6 +3,7 @@ import { Field } from './field';
 import { Observable, of } from 'rxjs';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { catchError, map, tap } from 'rxjs/operators';
+import  weathertypesExtended from './additionalResources/weathertypesExtended.json';
 //import { Vote } from './vote';
 
 @Injectable({
@@ -41,11 +42,18 @@ export class FieldsService {
     const allTextLines = text.split('\n');
     for (var i=0; i<allTextLines.length; i++) {
         var data = allTextLines[i].split(';');
-        if (data.length > 1){        
+        var fieldname: string = data[0].replace(/\'/g,'');
+        var weathertypesExtendedIndex = weathertypesExtended.map(function(e) {return e["field name"]}).indexOf(fieldname)
+
+        if (data.length > 1 && weathertypesExtendedIndex > -1){               //Da die API sehr wenig Informationen über die Messtypen enthält muss leider ein innerjoin erfolgen.
             var field: Field = {
-            name: data[0].replace(/\'/g,''),
-            type: data[1].replace(/\'/g,'')
-            };        
+              name: fieldname,
+              type: data[1].replace(/\'/g,''),
+              description: weathertypesExtended[weathertypesExtendedIndex].description,
+              unit: weathertypesExtended[weathertypesExtendedIndex].unit,
+              maxValue: weathertypesExtended[weathertypesExtendedIndex].MaxValue,
+              minValue: weathertypesExtended[weathertypesExtendedIndex].MinValue          
+          };        
         fields.push(field); 
         }                  
     }

@@ -17,6 +17,8 @@ import { NgSelectModule } from '@ng-select/ng-select';
 
 import { PlotlyViaCDNModule  } from 'angular-plotly.js';
 import { FormsModule } from '@angular/forms';
+import { WeatherOverviewComponent } from './weather-overview/weather-overview.component';
+import { WindDetailsComponent } from './wind-details/wind-details.component';
   PlotlyViaCDNModule.plotlyVersion = 'latest'; 
   PlotlyViaCDNModule.plotlyBundle = null;
 
@@ -24,7 +26,9 @@ import { FormsModule } from '@angular/forms';
 @NgModule({
   declarations: [
     AppComponent,
-    MainPlotlyComponentComponent
+    MainPlotlyComponentComponent,
+    WeatherOverviewComponent,
+    WindDetailsComponent
   ],
   imports: [
     BrowserModule,
