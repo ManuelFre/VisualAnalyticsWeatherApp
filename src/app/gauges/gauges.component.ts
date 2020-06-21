@@ -9,15 +9,22 @@ import { PlotlyModule } from 'angular-plotly.js';
 import { FormBuilder, FormControl, NgModel } from '@angular/forms';
 import { Plotly } from 'angular-plotly.js/src/app/shared/plotly.interface';
 
+
 @Component({
-  selector: 'app-weather-overview',
-  templateUrl: './weather-overview.component.html',
-  styleUrls: ['./weather-overview.component.css']
+  selector: 'app-gauges',
+  templateUrl: './gauges.component.html',
+  styleUrls: ['./gauges.component.css']
 })
-
-export class WeatherOverviewComponent implements OnInit {
+export class GaugesComponent implements OnInit {
   @Input() controllings: Controllings;        //Besagt, dass beim Aufruf des Components ein controlling mitgegeben wird
-
+  
+  graphs;
+  stationContainer: [];
+  stations: Station[];
+  displayedFields: Field[];
+  displayedStations: Station[];
+  timeseriescollections: Timeseriescollection[];
+  selectedDate: String;
 
   ngOnChanges() {
     this.selectedFieldsChange();
@@ -26,15 +33,14 @@ export class WeatherOverviewComponent implements OnInit {
       this.selectedDateChange();
       this.selectedDate = this.controllings.date;
     }
-}
-  stations: Station[];
-  displayedFields: Field[];
-  displayedStations: Station[];
-  timeseriescollections: Timeseriescollection[];
-  graphs;
-  selectedDate: String;
+  }
 
-  
+  format(date: Date) {
+    var d = date.getDay();
+    var m = date.getMonth() + 1;
+    var y = date.getFullYear();
+    return '' + y + '-' + (m<=9 ? '0' + m : m) + '-' + (d <= 9 ? '0' + d : d);
+  }
 
   getTimeseries(stat: Station, fd: Field, day: string): void{
     console.log(`Got Timeseriesrequest`);
@@ -45,52 +51,93 @@ export class WeatherOverviewComponent implements OnInit {
       day: day,
       timeseries: []
     };
-    console.log(`Load Timeseries for Station ${stat.name}, Field ${fd.name} and day ${day}`)
+    var thisDaysDate = new Date(day)
+
+    var timeseriescollectionDayBefore: Timeseriescollection = {
+      station: stat,
+      field: fd,
+      day: this.format(new Date((thisDaysDate.setDate(thisDaysDate.getDate() - 1)))),
+      timeseries: []
+    };
+
+
+
+    console.log(`Load Timeseries for Station ${stat.name}, Field ${fd.name} and day ${day} compared with day ${timeseriescollectionDayBefore.day}`)
     this.timeseriesService.getTimeseries(stat.id,fd.name, day)
       .subscribe(timeseries => {
         timeseriescollection.timeseries = timeseries
-        if(this.timeseriescollections.filter(function(element, index, array){return (element.field == fd && element.station == stat && element.day == day)}).length === 0){
-          this.timeseriescollections.push(timeseriescollection)      //Man subsribed sich auf den Service. Damit ist es trotz synchroner Client-Server Übertragung möglich, dass die Website auch in der Wartezeit steuerbar ist.
-          this.drawTimeseriescollection(timeseriescollection,fd);
-        }
-
+        this.timeseriesService.getTimeseries(stat.id,fd.name, timeseriescollectionDayBefore.day)
+          .subscribe(timeseriesDayBefore => {
+            timeseriescollectionDayBefore.timeseries = timeseriesDayBefore
+            if(this.timeseriescollections.filter(function(element, index, array){return (element.field == fd && element.station == stat && element.day == day)}).length === 0){
+              this.timeseriescollections.push(timeseriescollection)
+              this.drawTimeseriescollection(timeseriescollection,timeseriescollectionDayBefore,fd);
+            }
+          });
         });
 
   }
 
-  drawTimeseriescollection(timeseriescollection: Timeseriescollection, field: Field){
-    //var xval: Date[];
-    var xval: number[];
-    var yval: number[];
-    var cnt;
+  drawTimeseriescollection(timeseriescollection: Timeseriescollection,timeseriescollectionDayBefore: Timeseriescollection, field: Field){
+  
+    var sum: number = 0;
+    var cnt: number = 0;
+    var sumDayBefore: number = 0;
+    var cntDayBefore: number = 0;
 
-    //this.timeseriescollections.forEach(timeseriescollection => {
-      xval = [];
-      yval = [];  
-      cnt = 0;
-      timeseriescollection.timeseries.forEach(timeserieselement => {
-        xval.push(cnt);
-        yval.push(timeserieselement.value);
-        cnt = cnt + 1;
-      });
+    timeseriescollection.timeseries.forEach(timeserieselement => {
+      sum += timeserieselement.value;
+      cnt += 1;
+    });
 
-      this.graphs.forEach(graph => {
-        if(graph.field === field){
-          
-          graph.data.push({ 
-            x: xval, 
-            y: yval, 
-            type: (graph.field.name === 'regen') ? 'bar' : 'scatter', 
-            mode: (graph.field.unit === '°') ? 'markers' :'lines+markers', 
-            name: timeseriescollection.station.name, 
-            marker: {color: timeseriescollection.station.color},
-            station: timeseriescollection.station,
-          })   
+    timeseriescollectionDayBefore.timeseries.forEach(timeserieselement => {
+      sumDayBefore += timeserieselement.value;
+      cntDayBefore += 1;
+    });
+    console.log(`Vortageswerte: ${sumDayBefore/cntDayBefore}`)
+    var data = [{ 
+      type: "indicator",
+      value: Math.round(sum/cnt),
+      delta: { reference: Math.round(sumDayBefore/cntDayBefore) },
+      gauge: { 
+        axis: { 
+          visible: true, 
+          range: [field.maxValue, field.minValue]
+        },
+        bar: {color: "darkblue"} 
+      },
+      title: field.description,
+      //name: timeseriescollection.field.name, 
+      //marker: {color: timeseriescollection.station.color},
+    } ] 
+    
+    var layout = {
+      width: 600,
+      height: 400,
+      margin: { t: 30, b: 30, l: 30, r: 30 },
+      template: {
+        data: {
+          indicator: [
+            {
+              title: { text: timeseriescollection.field.name },
+              mode: "number+delta+gauge",
+              delta: { reference: 90 }
+            }
+          ]
         }
-      });
+      }
+    };
 
-      
-  //  });
+    var gaucho = {
+      data: data,
+      layout: layout,
+      station: timeseriescollection.station,
+      field: field
+    }
+  this.graphs.push(gaucho)
+  this.graphs.sort((a,b) => (a.field.name > b.field.name) ? 1 : -1)
+  this.graphs.sort((a,b) => (a.station.name > b.station.name) ? 1 : -1)
+  this.displayedStations.sort((a,b) => (a.name > b.name) ? 1 : -1)
   }
 
   removeStationFromGraph(station: Station){
@@ -105,6 +152,7 @@ export class WeatherOverviewComponent implements OnInit {
     
 
   }
+
   removeFieldGraph(field: Field){
     this.graphs.forEach(graph => {
       if(graph.field === field){
@@ -112,36 +160,6 @@ export class WeatherOverviewComponent implements OnInit {
         this.graphs.splice(this.graphs.indexOf(graph), 1);       
       }
     });
-
-    console.log("Fieldgraph should be deleted")
-
-  }
-
-  addFieldGraph(field: Field){
-    var newGraph ={
-      data: [],
-      layout: {
-        width: 600, height: 500,
-        margin:0, 
-        title: field.description,
-        xaxis: {
-          mirror: true,
-          title: "Stunde",
-          automargin: true
-          },
-        yaxis: {
-          mirror: true,
-          automargin: true,
-          title: field.unit 
-        },
-        annotations:[],
-
-      },
-      field: field,
-      
-    }
-    this.graphs.push(newGraph)
-    console.log(`Graph ${newGraph.layout.title} created`)
   }
 
   constructor(
@@ -162,10 +180,13 @@ export class WeatherOverviewComponent implements OnInit {
     this.displayedFields= [];
     this.graphs = [];
     this.selectedDate ="";
-
-
+    this.stationContainer= [];
   }
   
+
+
+
+  //---------------------------------------Changes: --------------------------
   selectedStationsChange(): void {
     var tmpStations: Station[];
     tmpStations=[];
@@ -208,7 +229,7 @@ export class WeatherOverviewComponent implements OnInit {
     this.controllings.fields.forEach(selectedField => {
       tmpFields.push(selectedField)
       if (this.displayedFields.indexOf(selectedField) === -1 ){
-        this.addFieldGraph(selectedField)
+        //this.addFieldGraph(selectedField)
         this.displayedStations.forEach(displayedStation => {
           this.getTimeseries(displayedStation,selectedField,this.controllings.date.toString());
         })       
@@ -233,23 +254,18 @@ export class WeatherOverviewComponent implements OnInit {
     });
   }
 
+
   selectedDateChange(): void{
     console.log(`Date changed to ${this.controllings.date.toString()}`)
 
-    var tmpgraphdata = [];
+    var tmpgraphs = JSON.parse(JSON.stringify(this.graphs));
     if(this.controllings.date != null){
-      this.graphs.forEach(graph => {
-        tmpgraphdata = JSON.parse(JSON.stringify(graph.data));        //Deep copy erstellen, sonst funktioniert das löschen der Einträge in der Foreach nicht.
-        tmpgraphdata.forEach(graphdata => {
-          this.getTimeseries(graphdata.station ,graph.field, this.controllings.date.toString())
-          graph.data.splice(graph.data.indexOf(graphdata), 1)
-        });
+      tmpgraphs.forEach(graph => {
+        this.graphs.splice(this.graphs.indexOf(graph), 1)
+        this.getTimeseries(graph.station ,graph.field, this.controllings.date.toString())       
       });
     }
 
     
   }
-
-  
-
 }

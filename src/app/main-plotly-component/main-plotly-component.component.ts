@@ -29,6 +29,8 @@ export class MainPlotlyComponentComponent implements OnInit {
   timeseriescollections: Timeseriescollection[];
   graphs;
   gauchos;
+  choosenSite: String;
+
   //selectedDate: String;
   
 
@@ -48,8 +50,8 @@ export class MainPlotlyComponentComponent implements OnInit {
       .subscribe(fields => {
         this.controllings.fields=[
           fields[fields.map(function(e) {return e.name;}).indexOf('t')],
-          fields[fields.map(function(e) {return e.name;}).indexOf('ldstat')],
-          fields[fields.map(function(e) {return e.name;}).indexOf('ldred')]
+          fields[fields.map(function(e) {return e.name;}).indexOf('regen')],
+          fields[fields.map(function(e) {return e.name;}).indexOf('wr')]
         ] 
         this.fields = fields      //Man subsribed sich auf den Service. Damit ist es trotz synchroner Client-Server Übertragung möglich, dass die Website auch in der Wartezeit steuerbar ist.
         this.selectedControllsChange(); 
@@ -58,6 +60,7 @@ export class MainPlotlyComponentComponent implements OnInit {
 
   selectedControllsChange(): void{
     console.log("CHANGE!")
+    console.log(this.controllings.stations.length)
     var newCont:Controllings;
     newCont = {
       stations: this.controllings.stations,

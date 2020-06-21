@@ -21,19 +21,20 @@ export class WindDetailsComponent implements OnInit {
   @Input() fields: Field[];
 
 
-  ngOnChanges(changes: Controllings) {
-    this.selectedStationsChange();
-    if(this.controllings.date != this.selectedDate){
-      this.selectedDateChange();
-      this.selectedDate = this.controllings.date;
-    }
-
+  ngOnChanges() {
     if(this.fields != undefined && this.graphs.length == 0){
       this.addFieldGraph(this.fields.filter(field => field.name == 'wg')[0])
       this.annotationFields.push(this.fields.filter(field => field.name == 'wr')[0])
       this.addFieldGraph(this.fields.filter(field => field.name == 'wsg')[0])
       this.annotationFields.push(this.fields.filter(field => field.name == 'wsr')[0])
     }
+    
+    if(this.controllings.date != this.selectedDate){
+      this.selectedDateChange();
+      this.selectedDate = this.controllings.date;
+    }
+
+    this.selectedStationsChange();
 
 }
   stations: Station[];
@@ -65,12 +66,14 @@ export class WindDetailsComponent implements OnInit {
     console.log(`Load Timeseries for Station ${stat.name}, Field ${fd.name} and day ${day}`)
     this.timeseriesService.getTimeseries(stat.id,fd.name, day)
       .subscribe(timeseries => {
-        timeseriescollection.timeseries = timeseries
-        this.timeseriescollections.push(timeseriescollection)      //Man subsribed sich auf den Service. Damit ist es trotz synchroner Client-Server Übertragung möglich, dass die Website auch in der Wartezeit steuerbar ist.
+        timeseriescollection.timeseries = timeseries     
         this.timeseriesService.getTimeseries(stat.id,annotationcollection.field.name,day)
           .subscribe(annotationseries =>{
             annotationcollection.timeseries = annotationseries
-            this.drawTwoInOneTimeseriescollection(timeseriescollection,annotationcollection,fd);
+            if(this.timeseriescollections.filter(function(element, index, array){return (element.field == fd && element.station == stat && element.day == day)}).length === 0){
+              this.timeseriescollections.push(timeseriescollection)      //Man subsribed sich auf den Service. Damit ist es trotz synchroner Client-Server Übertragung möglich, dass die Website auch in der Wartezeit steuerbar ist.
+              this.drawTwoInOneTimeseriescollection(timeseriescollection,annotationcollection,fd);
+            }
           })
         });
 

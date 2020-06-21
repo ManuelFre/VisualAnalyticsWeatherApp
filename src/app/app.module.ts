@@ -7,6 +7,9 @@ import { MainPlotlyComponentComponent } from './main-plotly-component/main-plotl
 
 import { CommonModule } from '@angular/common';
 import { HttpClientModule }    from '@angular/common/http';
+import {MatButtonToggleModule} from '@angular/material/button-toggle'; 
+import {MatButtonModule} from '@angular/material/button';
+import {MatCardModule} from '@angular/material/card'; 
 
 import * as PlotlyJS from 'plotly.js/dist/plotly.js';
 //import { PlotlyModule } from 'angular-plotly.js';
@@ -19,6 +22,8 @@ import { PlotlyViaCDNModule  } from 'angular-plotly.js';
 import { FormsModule } from '@angular/forms';
 import { WeatherOverviewComponent } from './weather-overview/weather-overview.component';
 import { WindDetailsComponent } from './wind-details/wind-details.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { GaugesComponent } from './gauges/gauges.component';
   PlotlyViaCDNModule.plotlyVersion = 'latest'; 
   PlotlyViaCDNModule.plotlyBundle = null;
 
@@ -28,7 +33,8 @@ import { WindDetailsComponent } from './wind-details/wind-details.component';
     AppComponent,
     MainPlotlyComponentComponent,
     WeatherOverviewComponent,
-    WindDetailsComponent
+    WindDetailsComponent,
+    GaugesComponent
   ],
   imports: [
     BrowserModule,
@@ -38,7 +44,11 @@ import { WindDetailsComponent } from './wind-details/wind-details.component';
     //PlotlyModule
     PlotlyViaCDNModule,
     NgSelectModule,
-    FormsModule
+    FormsModule,
+    BrowserAnimationsModule,
+    MatButtonToggleModule,
+    MatButtonModule,
+    MatCardModule
   ],
   providers: [],
   bootstrap: [AppComponent]

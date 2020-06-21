@@ -1,0 +1,13 @@
+<mat-card *ngFor="let station of displayedStations">
+    <mat-card-title>{{station.name}}</mat-card-title>
+    <div class="container" class="row row-cols-2">
+        <div *ngFor="let graph of graphs">
+            <div *ngIf="graph.station.name == station.name" class="col">
+                <plotly-plot [data]="graph.data" [layout]="graph.layout" ></plotly-plot>
+            </div>
+        </div>
+
+    
+    </div>
+</mat-card>
+

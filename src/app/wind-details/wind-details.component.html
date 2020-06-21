@@ -1,10 +1,7 @@
-<p>wind-details works!</p>
 
-<div *ngIf="controllings">
-    <div class="container">
-        <div class="row row-cols-2">
-            <plotly-plot *ngFor="let graph of graphs" [data]="graph.data" [layout]="graph.layout" class="col"></plotly-plot>
-        </div>
+<div class="container">
+    <div class="row row-cols-2">
+        <plotly-plot *ngFor="let graph of graphs" [data]="graph.data" [layout]="graph.layout" class="col"></plotly-plot>
     </div>
-
 </div>
+

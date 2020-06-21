@@ -50,7 +50,22 @@
       </div>
     </div>
   </div>
-  
-<app-weather-overview [controllings]="controllings"></app-weather-overview>
-<app-wind-details [controllings]="controllings" [fields]="fields" ></app-wind-details>
+ 
+<h2>Seite wählen:</h2>
+<mat-button-toggle-group aria-label="Font Style" [(ngModel)] = "choosenSite" (click)="selectedControllsChange()"> 
+    <mat-button-toggle value="gauge">Tachos</mat-button-toggle>
+    <mat-button-toggle value="overview">Wetterübersicht</mat-button-toggle>
+    <mat-button-toggle value="wind">Winddetails</mat-button-toggle>
+</mat-button-toggle-group>
+
+<div *ngIf="choosenSite === 'overview'">
+    <app-weather-overview [controllings]="controllings"></app-weather-overview>
+</div> 
+<div *ngIf="choosenSite === 'wind'">
+    <app-wind-details [controllings]="controllings" [fields]="fields" ></app-wind-details>
+</div> 
+<div *ngIf="choosenSite === 'gauge'">
+    <app-gauges [controllings]="controllings" ></app-gauges>
+</div> 
+
 <!--plotly-plot [data]="graph.data" [layout]="graph.layout"></plotly-plot-->
