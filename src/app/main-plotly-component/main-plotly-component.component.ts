@@ -76,10 +76,17 @@ export class MainPlotlyComponentComponent implements OnInit {
 
   }
   format(date: Date) {
-    var d = date.getDay();
-    var m = date.getMonth() + 1;
-    var y = date.getFullYear();
-    return '' + y + '-' + (m<=9 ? '0' + m : m) + '-' + (d <= 9 ? '0' + d : d);
+    var d = new Date(date),
+    month = '' + (d.getMonth() + 1),
+    day = '' + d.getDate(),
+    year = d.getFullYear();
+
+    if (month.length < 2) 
+        month = '0' + month;
+    if (day.length < 2) 
+        day = '0' + day;
+
+    return [year, month, day].join('-');
   }
 
   ngOnInit(): void {
@@ -92,6 +99,7 @@ export class MainPlotlyComponentComponent implements OnInit {
       date}
     this.getStations();
     this.getFields();
+    this.choosenSite = 'overview';
   }
   
 

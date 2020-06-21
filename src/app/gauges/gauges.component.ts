@@ -36,10 +36,17 @@ export class GaugesComponent implements OnInit {
   }
 
   format(date: Date) {
-    var d = date.getDay();
-    var m = date.getMonth() + 1;
-    var y = date.getFullYear();
-    return '' + y + '-' + (m<=9 ? '0' + m : m) + '-' + (d <= 9 ? '0' + d : d);
+    var d = new Date(date),
+        month = '' + (d.getMonth() + 1),
+        day = '' + d.getDate(),
+        year = d.getFullYear();
+
+    if (month.length < 2) 
+        month = '0' + month;
+    if (day.length < 2) 
+        day = '0' + day;
+
+    return [year, month, day].join('-');
   }
 
   getTimeseries(stat: Station, fd: Field, day: string): void{
@@ -53,14 +60,13 @@ export class GaugesComponent implements OnInit {
     };
     var thisDaysDate = new Date(day)
 
+
     var timeseriescollectionDayBefore: Timeseriescollection = {
       station: stat,
       field: fd,
-      day: this.format(new Date((thisDaysDate.setDate(thisDaysDate.getDate() - 1)))),
+      day: this.format(new Date(thisDaysDate.setDate(thisDaysDate.getDate() - 1))),
       timeseries: []
     };
-
-
 
     console.log(`Load Timeseries for Station ${stat.name}, Field ${fd.name} and day ${day} compared with day ${timeseriescollectionDayBefore.day}`)
     this.timeseriesService.getTimeseries(stat.id,fd.name, day)
